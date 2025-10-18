@@ -64,7 +64,8 @@ pub(crate) fn init_db(pool: &DbPool, admin_pswd: String) -> anyhow::Result<(), r
             rusqlite::params![id, "admin", pw_hash, "admin"],
         )?;
         info!(
-            "Created default admin user: username='admin' password='{}' (change in production)", admin_pswd
+            "Created default admin user: username='admin' password='{}' (change in production)",
+            admin_pswd
         );
     }
     Ok(())

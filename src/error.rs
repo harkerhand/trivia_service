@@ -1,5 +1,5 @@
-use axum::http::StatusCode;
 use axum::Json;
+use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use thiserror::Error;
 
@@ -22,7 +22,7 @@ pub(crate) enum ApiError {
 }
 
 impl IntoResponse for ApiError {
-     fn into_response(self) -> axum::response::Response {
+    fn into_response(self) -> axum::response::Response {
         let code = match &self {
             ApiError::DbError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             ApiError::BcryptError(_) => StatusCode::INTERNAL_SERVER_ERROR,

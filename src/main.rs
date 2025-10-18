@@ -15,11 +15,11 @@ use axum::{
     Router,
     routing::{get, post, put},
 };
+use clap::Parser;
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
 use serde::{Deserialize, Serialize};
-use std::{net::SocketAddr, sync::Arc};
-use clap::Parser;
+use std::sync::Arc;
 use tracing::info;
 use tracing_subscriber;
 
@@ -39,7 +39,12 @@ struct Claims {
 }
 
 #[derive(clap::Parser)]
-#[command(name = "Trivia API Server", version = "1.0", author = "harkerhand", about = "A trivia question API server")]
+#[command(
+    name = "Trivia API Server",
+    version = "1.0",
+    author = "harkerhand",
+    about = "A trivia question API server"
+)]
 struct Cli {
     #[clap(short, long, default_value = "127.0.0.1")]
     ip: String,
@@ -55,7 +60,7 @@ struct Cli {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-   tracing_subscriber::fmt()
+    tracing_subscriber::fmt()
         .with_env_filter(
             tracing_subscriber::EnvFilter::try_from_default_env()
                 .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info")),
@@ -92,7 +97,7 @@ async fn main() -> Result<()> {
         .route("/api/v1/admin/review/{id}", put(admin_review_put))
         .with_state(state);
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
+    let addr = format!("{}:{}", cli.ip, cli.port);
     info!("listening on {}", addr);
     let listener = tokio::net::TcpListener::bind(addr).await?;
     let server = axum::serve(listener, app);

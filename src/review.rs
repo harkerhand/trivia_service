@@ -1,8 +1,8 @@
+use crate::AppState;
 use crate::accounts::parse_auth;
 use crate::database::get_conn;
 use crate::error::ApiError;
 use crate::trivia::{MessageResponse, Trivia, TriviaListQuery};
-use crate::{AppState};
 use axum::Json;
 use axum::extract::{Path, Query, State};
 use axum::http::{HeaderMap, StatusCode};
