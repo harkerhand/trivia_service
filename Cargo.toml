@@ -19,3 +19,4 @@ thiserror = "2.0.17"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.17", features = ["fmt", "env-filter"] }
 anyhow = "1.0.100"
+clap = { version = "4.5.49", features = ["derive"] }

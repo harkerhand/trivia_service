@@ -19,6 +19,7 @@ use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
 use serde::{Deserialize, Serialize};
 use std::{net::SocketAddr, sync::Arc};
+use clap::Parser;
 use tracing::info;
 use tracing_subscriber;
 
@@ -37,7 +38,20 @@ struct Claims {
     exp: usize,
 }
 
-
+#[derive(clap::Parser)]
+#[command(name = "Trivia API Server", version = "1.0", author = "harkerhand", about = "A trivia question API server")]
+struct Cli {
+    #[clap(short, long, default_value = "127.0.0.1")]
+    ip: String,
+    #[clap(short, long, default_value = "3000")]
+    port: u16,
+    #[clap(short, long, default_value = "admin123")]
+    admin_pswd: String,
+    #[clap(short, long, default_value = "jwt_secret")]
+    jwt_secret: String,
+    #[clap(short, long, default_value = "trivia.sqlite")]
+    database_url: String,
+}
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -48,20 +62,15 @@ async fn main() -> Result<()> {
         )
         .init();
 
-    let database_url =
-        std::env::var("DATABASE_URL").unwrap_or_else(|_| "trivia.sqlite".to_string());
-    let jwt_secret = std::env::var("JWT_SECRET").unwrap_or_else(|_| {
-        tracing::warn!(
-            "JWT_SECRET not set; using insecure default for testing. Set JWT_SECRET in production!"
-        );
-        "insecure_test_secret".to_string()
-    });
+    let cli = Cli::parse();
+    let database_url = cli.database_url;
+    let jwt_secret = cli.jwt_secret;
 
     let manager = SqliteConnectionManager::file(database_url.clone());
     let pool = Pool::builder()
         .build(manager)
         .expect("failed to create pool");
-    init_db(&pool).expect("failed to init db");
+    init_db(&pool, cli.admin_pswd).expect("failed to init db");
 
     let state = AppState {
         pool: Arc::new(pool),

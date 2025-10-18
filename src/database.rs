@@ -7,7 +7,7 @@ use rusqlite::OptionalExtension;
 use tracing::info;
 use uuid::Uuid;
 
-pub(crate) fn init_db(pool: &DbPool) -> anyhow::Result<(), rusqlite::Error> {
+pub(crate) fn init_db(pool: &DbPool, admin_pswd: String) -> anyhow::Result<(), rusqlite::Error> {
     let conn = pool.get().map_err(|_| rusqlite::Error::InvalidQuery)?; // simple map
     conn.execute_batch(
         r#"
@@ -58,13 +58,13 @@ pub(crate) fn init_db(pool: &DbPool) -> anyhow::Result<(), rusqlite::Error> {
         .optional()?;
     if existing.is_none() {
         let id = Uuid::new_v4().to_string();
-        let pw_hash = hash("admin123", DEFAULT_COST).map_err(|_| rusqlite::Error::InvalidQuery)?;
+        let pw_hash = hash(&admin_pswd, DEFAULT_COST).map_err(|_| rusqlite::Error::InvalidQuery)?;
         conn.execute(
             "INSERT INTO users (id, username, password_hash, role) VALUES (?1, ?2, ?3, ?4)",
             rusqlite::params![id, "admin", pw_hash, "admin"],
         )?;
         info!(
-            "Created default admin user: username='admin' password='admin123' (change in production)"
+            "Created default admin user: username='admin' password='{}' (change in production)", admin_pswd
         );
     }
     Ok(())
