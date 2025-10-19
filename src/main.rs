@@ -3,6 +3,7 @@ mod database;
 mod error;
 mod review;
 mod trivia;
+mod heyiwei;
 
 use crate::accounts::{get_me, login, signup};
 use crate::database::init_db;
@@ -22,6 +23,7 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tracing::info;
 use tracing_subscriber;
+use crate::heyiwei::get_heyiwei;
 
 type DbPool = Pool<SqliteConnectionManager>;
 
@@ -95,6 +97,7 @@ async fn main() -> Result<()> {
         )
         .route("/api/v1/admin/review", get(admin_list_review))
         .route("/api/v1/admin/review/{id}", put(admin_review_put))
+        .route("/api/v1/heyiwei", get(get_heyiwei))
         .with_state(state);
 
     let addr = format!("{}:{}", cli.ip, cli.port);
