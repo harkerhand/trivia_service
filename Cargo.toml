@@ -1,6 +1,6 @@
 [package]
 name = "trivia_service"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 
 [dependencies]
@@ -22,4 +22,4 @@ anyhow = "1.0.100"
 clap = { version = "4.5.49", features = ["derive"] }
 
 # 何意味API
-heyiwei = "0.1.0"
+heyiwei = { version = "0.2.0", features = ["full"] }
